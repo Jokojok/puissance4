@@ -1,5 +1,3 @@
-let sizeOfACase = 42;
-
 $(function () {
     for (let i = 0; i < size+1; i++) {
         $("#grille").append("<tr></tr>");

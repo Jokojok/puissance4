@@ -171,11 +171,6 @@ let grille = (function () {
     }
 })();
 
-// pour retenir les options plus tard si on désire améliorer le jeu
-let players = ["red", "blue", "green", "yellow"];   // ajouter des couleurs pour de potentiels futurs joueurs
-let nbrOfPlayer = 2;    // ne pas dépasser le nombre de couleur
-let size = 7;
-
 // gestion de l'IHM
 function play() {
     grille.creerGrille(size, size);
@@ -185,45 +180,44 @@ let player = 0;
 
 function jouer(ligne) {
     let choice = parseInt(ligne);
+    let response = $("#msg")
+    let responseSup = $("#msgSup")
+    let winner = null;
     if (choice >= 0 || choice <= size) {
-        if (choice > size) {
-            console.log("Mauvaise case choisie.");
+        // play
+        if (grille.jouer(choice, players[player])) {
+            player++;
+            responseSup.html("");
+        }
+        else if (winner !== null) {
+            responseSup.html("La colonne est pleine. Veuillez jouer une autre colonne.");
+        }
+
+        // check next player
+        if (player >= nbrOfPlayer) {
+            player = 0;
+        }
+
+        // check winner
+        winner = grille.isWinner();
+        if (winner === null) {
+            response.html("C'est au joueur " + players[player] + ".");
+            grille.afficherGrille();
         }
         else {
-            // play
-            if (grille.jouer(choice, players[player])) {
-                player++;
-            }
-            else {
-                console.log("La colonne est pleine. Veuillez jouer une autre colonne.");
-            }
+            response.html("Le gagnant est : " + winner + "\nC'est fini !");
+            grille.afficherGrille();
+        }
 
-            // check next player
-            if (player >= nbrOfPlayer) {
-                player = 0;
-            }
-
-            // check winner
-            let winner = grille.isWinner();
-            if (winner === null) {
-                console.log("C'est au joueur " + players[player]);
-                grille.afficherGrille();
-            }
-            else {
-                console.log("Le gagnant est : " + winner);
-                grille.afficherGrille();
-                console.log("C'est fini !");
-            }
-
-            // check full
-            if (grille.isFull()) {
-                grille.afficherGrille();
-                console.log("C'est fini ! La grille est pleine.");
-            }
+        // check full
+        if (grille.isFull()) {
+            grille.afficherGrille();
+            response.html("C'est fini ! La grille est pleine.");
+            responseSup.html("");
         }
     }
     else {
-        console.log("Veuillez rentrer un nombre entre 1 & " + size);
+        responseSup.html("Veuillez rentrer un nombre entre 1 & " + size);    // should not happen
     }
     grille.afficherGrille();
 }
